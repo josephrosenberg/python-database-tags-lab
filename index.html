@@ -5,6 +5,11 @@
     <h2>Posts</h2>
     {% for post in posts %}
       <h3>Title: {{ post.name }}</h3>
+      <h5>Tags:
+      {% for tag_key in post.tags %}
+         {{ tag_key.get().name }},
+      {% endfor %}
+    </h5>
       <h5>{{ post.date.strftime("%d/%m/%y") }}</h5>
       <p>{{ post.content }}</p>
       {% for comment_key in post.comments %}
@@ -17,6 +22,13 @@
         <div>Comment: <textarea name="comment" rows="2" cols="40"></textarea></div>
         <div><input type="hidden" name="post_url_key" value="{{ post.key.urlsafe() }}">
         <div><input type="submit" value="Comment"></div>
+      </form>
+      <hr>
+
+      <form action="/tag" method="post">
+        <div>Tag Name: <input name="name"></input></div>
+        <div><input type="hidden" name="post_url_key" value="{{ post.key.urlsafe() }}">
+        <div><input type="submit" value="Make Tag"></div>
       </form>
       <hr>
     {% endfor %}

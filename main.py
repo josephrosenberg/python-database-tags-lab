@@ -46,14 +46,15 @@ class Comment(ndb.Model):
     comment = ndb.TextProperty(required=True)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
-class Tag
+class Tag(ndb.Model):
     name = ndb.StringProperty(required=True)
-    @def posts():
+    def posts():
         doc = "The posts property."
         def fget(self):
             return Post.query().filter(Post.tags == self.key).fetch()
         def fset(self, value):
             value.tags.append(self.key)
+            value.put()
         return locals()
     posts = property(**posts())
     # posts = ndb.KeyProperty(kind='Post', repeated=True)
@@ -108,6 +109,7 @@ class TagHandler(webapp2.RequestHandler):
         name = self.request.get('name')
         tag = Tag(name=name)
         tag_key = tag.put()
+        print "Tag key %s" % (tag_key)
 
         # Find the related post
         post_url_key = self.request.get('post_url_key')
@@ -116,11 +118,13 @@ class TagHandler(webapp2.RequestHandler):
 
         #Attach tag to post
         post.tags.append(tag_key)
+        post.put()
 
         self.redirect('/')
 
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/comment', CommentHandler)
+    ('/comment', CommentHandler),
+    ('/tag', TagHandler)
 ], debug=True)
