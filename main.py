@@ -51,7 +51,9 @@ class Tag(ndb.Model):
     def posts():
         doc = "The posts property."
         def fget(self):
+            print "TRYING TO GET POSTS..."
             return Post.query().filter(Post.tags == self.key).fetch()
+            #return Post.query().filter(if self.key in Post.tags).fetch().key
         def fset(self, value):
             value.tags.append(self.key)
             value.put()
@@ -104,9 +106,25 @@ class CommentHandler(webapp2.RequestHandler):
         self.redirect('/')
 
 class TagHandler(webapp2.RequestHandler):
+    def get(self):
+        query = Tag.query()
+        tag_data = query.fetch()
+        # Pass the data to the template
+        template_values = {
+            'tags' : tag_data
+        }
+        template = JINJA_ENVIRONMENT.get_template('tags.html')
+        self.response.write(template.render(template_values))
+
     def post(self):
         # Make tag
         name = self.request.get('name')
+
+        #try to find tag if it exists
+        # tag_key = Tag.query().filter(name=name).fetch().key
+        # if tag_key not in :
+        #     pass
+        # else:
         tag = Tag(name=name)
         tag_key = tag.put()
         print "Tag key %s" % (tag_key)
@@ -125,6 +143,6 @@ class TagHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/comment', CommentHandler),
-    ('/tag', TagHandler)
+    ('/comments', CommentHandler),
+    ('/tags', TagHandler)
 ], debug=True)
