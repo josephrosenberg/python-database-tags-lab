@@ -6,13 +6,13 @@
     {% for post in posts %}
       <h3>Title: {{ post.name }}</h3>
       <h5>Tags:
-      {% for tag_key in post.tags %}
+      {% for tag_key in post.tag_keys %}
          {{ tag_key.get().name }},
       {% endfor %}
     </h5>
       <h5>{{ post.date.strftime("%d/%m/%y") }}</h5>
       <p>{{ post.content }}</p>
-      {% for comment_key in post.comments %}
+      {% for comment_key in post.comment_keys %}
         <h3>Commenter: {{ comment_key.get().name }}</h3>
         <!-- <h5> comment_key.date.strftime("%d/%m/%y") }}</h5> -->
         <p>{{ comment_key.get().comment }}</p>

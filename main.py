@@ -38,8 +38,8 @@ class Post(ndb.Model):
     name = ndb.StringProperty(required=True)
     content = ndb.TextProperty(required=True)
     date = ndb.DateTimeProperty(auto_now_add=True)
-    comments = ndb.KeyProperty(kind='Comment', repeated=True)
-    tags = ndb.KeyProperty(kind='Tag', repeated=True)
+    comment_keys = ndb.KeyProperty(kind='Comment', repeated=True)
+    tag_keys = ndb.KeyProperty(kind='Tag', repeated=True)
 
 class Comment(ndb.Model):
     name = ndb.StringProperty(required=True)
@@ -52,10 +52,10 @@ class Tag(ndb.Model):
         doc = "The posts property."
         def fget(self):
             print "TRYING TO GET POSTS..."
-            return Post.query().filter(Post.tags == self.key).fetch()
-            #return Post.query().filter(if self.key in Post.tags).fetch().key
+            return Post.query().filter(Post.tag_keys == self.key).fetch()
+            #return Post.query().filter(if self.key in Post.tag_keys).fetch().key
         def fset(self, value):
-            value.tags.append(self.key)
+            value.tag_keys.append(self.key)
             value.put()
         return locals()
     posts = property(**posts())
@@ -100,7 +100,7 @@ class CommentHandler(webapp2.RequestHandler):
         post = post_key.get()
 
         # Attach the comment to that post
-        post.comments.append(comment_key)
+        post.comment_keys.append(comment_key)
         post.put()
 
         self.redirect('/')
@@ -135,7 +135,7 @@ class TagHandler(webapp2.RequestHandler):
         post = post_key.get()
 
         #Attach tag to post
-        post.tags.append(tag_key)
+        post.tag_keys.append(tag_key)
         post.put()
 
         self.redirect('/')
