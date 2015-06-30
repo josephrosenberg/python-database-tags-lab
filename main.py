@@ -75,12 +75,12 @@ class PostTag(ndb.Model):
 class Tag(ndb.Model):
     name = ndb.StringProperty(required=True)
 
-    @classmethod  #Why is this a @classmethod when we explicitly use Tag
-    def get_or_create(cls, tag_name):
+    @classmethod
+    def get_or_create(cls, name):
         """Gets or creates a tag with the given name."""
-        tag = Tag.query(Tag.tag_name == tag_name).get()
+        tag = Tag.query(Tag.name == name).get()
         if not tag:
-            tag = Tag(tag_name=tag_name)
+            tag = Tag(name=name)
             tag.put()
         return tag
 
