@@ -49,8 +49,14 @@ class Post(ndb.Model):
     def add_tag(self, tag_name):
         """Adds a tag to this post."""
         tag = Tag.get_or_create(tag_name)
-        post_tag = PostTag(post_key=self.key, tag_key=tag.key)
-        post_tag.put()
+        post_tag = PostTag.query(PostTag.tag_key == tag.key,
+                                 PostTag.post_key == self.key
+                                ).get()
+        # Only link the two if that hasn't happened already
+        if not post_tag:
+            post_tag = PostTag(post_key=self.key, tag_key=tag.key)
+            post_tag.put()
+
 
     def add_tags(self, tag_names):
         """Adds multiple tags to this post."""
