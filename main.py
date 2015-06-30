@@ -51,7 +51,6 @@ class Tag(ndb.Model):
     def posts():
         doc = "The posts property."
         def fget(self):
-            print "TRYING TO GET POSTS..."
             return Post.query().filter(Post.tag_keys == self.key).fetch()
             #return Post.query().filter(if self.key in Post.tag_keys).fetch().key
         def fset(self, value):
