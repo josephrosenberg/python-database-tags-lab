@@ -6,8 +6,8 @@
     {% for post in posts %}
       <h3>Title: {{ post.name }}</h3>
       <h5>Tags:
-      {% for tag_key in post.tag_keys %}
-         {{ tag_key.get().name }},
+      {% for tag in post.get_tags() %}
+         {{ tag.name }},
       {% endfor %}
     </h5>
       <h5>{{ post.date.strftime("%d/%m/%y") }}</h5>

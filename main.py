@@ -39,26 +39,56 @@ class Post(ndb.Model):
     content = ndb.TextProperty(required=True)
     date = ndb.DateTimeProperty(auto_now_add=True)
     comment_keys = ndb.KeyProperty(kind='Comment', repeated=True)
-    tag_keys = ndb.KeyProperty(kind='Tag', repeated=True)
+
+    def get_tags(self):
+        """Gets all tags associated with this post."""
+        post_tags = PostTag.query(PostTag.post_key == self.key).fetch()
+        tag_keys = [post_tag.tag_key for post_tag in post_tags]
+        return ndb.get_multi(tag_keys)
+
+    def add_tag(self, tag_name):
+        """Adds a tag to this post."""
+        tag = Tag.get_or_create(tag_name)
+        post_tag = PostTag(post_key=self.key, tag_key=tag.key)
+        post_tag.put()
+
+    def add_tags(self, tag_names):
+        """Adds multiple tags to this post."""
+        tags = [Tag.get_or_create(tag_name) for tag_name in tag_names]
+        post_tags = []
+        for tag in tags:
+            post_tag = PostTag(post_key=self.key, tag_key=tag.key)
+        ndb.put_multi(post_tags)
+
 
 class Comment(ndb.Model):
     name = ndb.StringProperty(required=True)
     comment = ndb.TextProperty(required=True)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
+
+class PostTag(ndb.Model):
+    post_key = ndb.KeyProperty(kind='Post')
+    tag_key = ndb.KeyProperty(kind='Tag')
+
+
 class Tag(ndb.Model):
     name = ndb.StringProperty(required=True)
-    def posts():
-        doc = "The posts property."
-        def fget(self):
-            return Post.query().filter(Post.tag_keys == self.key).fetch()
-            #return Post.query().filter(if self.key in Post.tag_keys).fetch().key
-        def fset(self, value):
-            value.tag_keys.append(self.key)
-            value.put()
-        return locals()
-    posts = property(**posts())
-    # posts = ndb.KeyProperty(kind='Post', repeated=True)
+
+    @classmethod  #Why is this a @classmethod when we explicitly use Tag
+    def get_or_create(cls, tag_name):
+        """Gets or creates a tag with the given name."""
+        tag = Tag.query(Tag.tag_name == tag_name).get()
+        if not tag:
+            tag = Tag(tag_name=tag_name)
+            tag.put()
+        return tag
+
+    def get_posts(self):
+        """Gets all posts associated with this tag."""
+        post_tags = PostTag.query(PostTag.tag_key == self.key).fetch()
+        post_keys = [post_tag.post_key for post_tag in post_tags]
+        return ndb.get_multi(post_keys)
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -106,44 +136,27 @@ class CommentHandler(webapp2.RequestHandler):
 
 class TagHandler(webapp2.RequestHandler):
     def get(self):
-        query = Tag.query()
-        tag_data = query.fetch()
-        # Pass the data to the template
-        template_values = {
-            'tags' : tag_data
-        }
-        template = JINJA_ENVIRONMENT.get_template('tags.html')
-        self.response.write(template.render(template_values))
+        self.response.write("TAGS")
+        # query = Tag.query()
+        # tag_data = query.fetch()
+        # # Pass the data to the template
+        # template_values = {
+        #     'tags' : tag_data
+        # }
+        # template = JINJA_ENVIRONMENT.get_template('tags.html')
+        # self.response.write(template.render(template_values))
 
     def post(self):
         # Make tag
         name = self.request.get('name')
-        print "Creating Tag with name '%s'" % (name)
-
-        # try to find tag if it exists
-        all_tags = Tag.query()
-        print all_tags
-        tag = all_tags.filter(Tag.name == name).fetch()
-        print tag
-        tag_key = ''
-        if tag:
-            print "Tag with name '%s' already exists" % (name)
-            tag_key = tag[0].key
-            print "key is : %s " % (tag_key)
-        else:
-            new_tag = Tag(name=name)
-            tag_key = new_tag.put()
-            print "Tag key %s" % (tag_key)
 
         # Find the related post
         post_url_key = self.request.get('post_url_key')
         post_key = ndb.Key(urlsafe=post_url_key)
         post = post_key.get()
 
-        #Attach tag to a post if it doesn't already exist in that list
-        if tag_key not in post.tag_keys:
-            post.tag_keys.append(tag_key)
-            post.put()
+        #This will create the tag if necessary
+        post.add_tag(name)
 
         self.redirect('/')
 
