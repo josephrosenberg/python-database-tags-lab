@@ -119,24 +119,32 @@ class TagHandler(webapp2.RequestHandler):
     def post(self):
         # Make tag
         name = self.request.get('name')
+        print "Creating Tag with name '%s'" % (name)
 
-        #try to find tag if it exists
-        # tag_key = Tag.query().filter(name=name).fetch().key
-        # if tag_key not in :
-        #     pass
-        # else:
-        tag = Tag(name=name)
-        tag_key = tag.put()
-        print "Tag key %s" % (tag_key)
+        # try to find tag if it exists
+        all_tags = Tag.query()
+        print all_tags
+        tag = all_tags.filter(Tag.name == name).fetch()
+        print tag
+        tag_key = ''
+        if tag:
+            print "Tag with name '%s' already exists" % (name)
+            tag_key = tag[0].key
+            print "key is : %s " % (tag_key)
+        else:
+            new_tag = Tag(name=name)
+            tag_key = new_tag.put()
+            print "Tag key %s" % (tag_key)
 
         # Find the related post
         post_url_key = self.request.get('post_url_key')
         post_key = ndb.Key(urlsafe=post_url_key)
         post = post_key.get()
 
-        #Attach tag to post
-        post.tag_keys.append(tag_key)
-        post.put()
+        #Attach tag to a post if it doesn't already exist in that list
+        if tag_key not in post.tag_keys:
+            post.tag_keys.append(tag_key)
+            post.put()
 
         self.redirect('/')
 
