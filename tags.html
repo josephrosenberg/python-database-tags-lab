@@ -5,9 +5,9 @@
     <h2>Tags</h2>
     {% for tag in tags %}
       <h3>Tag Title: {{ tag.name }}</h3>
-      
+
       <ul>
-      {% for post in tag.posts %}
+      {% for post in tag.get_posts() %}
          <li>Post: {{ post.name }}</li>
       {% endfor %}
       </ul>

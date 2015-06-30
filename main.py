@@ -136,15 +136,14 @@ class CommentHandler(webapp2.RequestHandler):
 
 class TagHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write("TAGS")
-        # query = Tag.query()
-        # tag_data = query.fetch()
-        # # Pass the data to the template
-        # template_values = {
-        #     'tags' : tag_data
-        # }
-        # template = JINJA_ENVIRONMENT.get_template('tags.html')
-        # self.response.write(template.render(template_values))
+        query = Tag.query()
+        tags = query.fetch()
+        # Pass the data to the template
+        template_values = {
+            'tags' : tags
+        }
+        template = JINJA_ENVIRONMENT.get_template('tags.html')
+        self.response.write(template.render(template_values))
 
     def post(self):
         # Make tag
