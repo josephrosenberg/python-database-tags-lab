@@ -4,7 +4,7 @@
   <body>
     <h2>Posts</h2>
     {% for post in posts %}
-      <h3>Title: {{ post.name }}</h3>
+      <h3>Title: {{ post.title }}</h3>
       <h5>Tags:
       {% for tag in post.get_tags() %}
          {{ tag.name }},
