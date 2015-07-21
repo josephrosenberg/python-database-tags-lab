@@ -15,7 +15,13 @@ This lab will expand your blog capabilities even furthur!  After this lab you wi
 
 ## Directions
 
-1.
+1. Fill in the tag handler so it gets the Tag Name and adds it to the post entry
+2. Fill out the route so that `WSGIApplication` accepts the `/tags` route and passes it to the `TagHandler`
+3. Fill out the form in `index.html` so that it passes the tag name to the `/tags` route
+4. Pass all of the tags to our `tags.html` page
+5. Fill out `tags.html` so that it displays a list of tags
+6. Each tag should have a list of posts within it's section.
+
 
 ## Stretch
 

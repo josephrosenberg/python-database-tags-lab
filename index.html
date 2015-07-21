@@ -26,6 +26,7 @@
       </form>
       <hr>
 
+      <!-- This is the tags form that needs to pass its params to '/tags' by 'post' -->
       <form action="/tags" method="post">
         <div>Tag Name: <input name="name"></input></div>
         <div><input type="hidden" name="post_url_key" value="{{ post.key.urlsafe() }}">

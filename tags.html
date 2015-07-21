@@ -4,10 +4,11 @@
   <body>
     <a href="/">Go back to the blog!</a>
     <h2>Tags</h2>
+    <!-- Show each tag in tags -->
     {% for tag in tags %}
       <h3>Tag Title: {{ tag.name }}</h3>
-
       <ul>
+      <!-- Show all of the posts for each tag (use .get_posts() ) -->
       {% for post in tag.get_posts() %}
          <li>Post: {{ post.name }}</li>
       {% endfor %}

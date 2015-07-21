@@ -152,15 +152,15 @@ class TagHandler(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
     def post(self):
-        # Make tag
-        name = self.request.get('name')
-
         # Find the related post
         post_url_key = self.request.get('post_url_key')
         post_key = ndb.Key(urlsafe=post_url_key)
         post = post_key.get()
 
-        #This will create the tag if necessary
+        # Get the tag name from the form
+        name = self.request.get('name')
+
+        #Add the tag to the post
         post.add_tag(name)
 
         self.redirect('/')
@@ -169,5 +169,6 @@ class TagHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/comments', CommentHandler),
+    # add route below
     ('/tags', TagHandler)
 ], debug=True)
