@@ -20,7 +20,7 @@
 # in order to see changes reflected in the redirect immediately
 
 # To clear the datastore:
-# /usr/local/google_appengine/dev_appserver.py --clear_datastore=1 [path_to_app_name]
+# dev_appserver.py --clear_datastore=1 [path_to_app_name]
 
 import os
 import webapp2
